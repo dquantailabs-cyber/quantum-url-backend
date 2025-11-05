@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Link - D-Quant AI Labs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Minimal inline CSS for visibility if style.css fails */
+        .result-box { display: none; margin-top: 20px; }
+        .result-box.active { display: block; }
+        .particle { 
+            position: absolute; width: 5px; height: 5px; 
+            background: #00d9ff; border-radius: 50%; 
+            opacity: 0.7; 
+            animation-name: float; 
+            animation-iteration-count: infinite; 
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="quantum-bg" id="quantumBg"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="quantum-icon"></div>
+                <h1>Quantum Link</h1>
+            </div>
+            <p class="subtitle">D-QUANT AI LABS</p>
+        </header>
+
+        <div class="main-section">
+            <h2 style="color: #00d9ff; margin-bottom: 20px;">Shorten Your URL with Quantum Technology</h2>
+            
+            <div class="input-group">
+                <label for="longUrl">Enter Long URL</label>
+                <input type="url" id="longUrl" placeholder="https://example.com/very/long/url/to/shorten" required>
+            </div>
+
+            <div class="input-group">
+                <label for="customAlias">Custom Alias (Optional)</label>
+                <input type="text" id="customAlias" placeholder="my-custom-link">
+            </div>
+
+            <button type="button" class="quantum-btn" onclick="shortenUrl(event)">
+                Generate Quantum Link
+            </button>
+
+            <div class="result-box" id="resultBox">
+                <h3 style="color: #00d9ff; margin-bottom: 15px;">Your Quantum Link is Ready!</h3>
+                <div class="shortened-url">
+                    <div class="url-display" id="shortenedUrl"></div>
+                    <button class="copy-btn" onclick="copyUrl(event)">Copy</button>
+                </div>
+                <div class="quantum-status">
+                    <div class="status-dot"></div>
+                    <span>Quantum Entanglement: Active | Security: Encrypted</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-section">
+            <h2 style="color: #00d9ff; margin-bottom: 20px;">About Quantum Link</h2>
+            <p style="line-height: 1.8; color: #b0b0b0;">
+                Quantum Link leverages quantum computing principles to generate truly random, secure URL shorteners. 
+                Built on Qiskit, our quantum algorithms ensure each shortened link is unique and cryptographically secure. 
+                This project is proudly developed under <strong style="color: #00d9ff;">D-Quant AI Labs</strong>, 
+                pioneering the future of quantum-enhanced web technologies.
+            </p>
+            <div class="tech-stack">
+                <div class="tech-badge">Qiskit</div>
+                <div class="tech-badge">Quantum Computing</div>
+                <div class="tech-badge">Python Backend</div>
+                <div class="tech-badge">REST API</div>
+                <div class="tech-badge">Cryptography</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 D-Quant AI Labs. Built by Devesh Patwari. All rights reserved.</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Powered by Quantum Technology</p>
+        </footer>
+    </div>
+
+    <script>
+        // Create floating particles background
+        const quantumBg = document.getElementById('quantumBg');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            quantumBg.appendChild(particle);
+        }
+
+        // Shorten URL using Flask backend
+        async function shortenUrl(event) {
+            event.preventDefault(); // prevent page reload
+
+            const longUrl = document.getElementById('longUrl').value;
+            const customAlias = document.getElementById('customAlias').value;
+
+            if (!longUrl) {
+                alert('Please enter a URL to shorten');
+                return;
+            }
+
+            try {
+                const response = await fetch("/generate", { // relative path works with Flask
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: longUrl, alias: customAlias })
+                });
+
+                if (!response.ok) throw new Error("Server error");
+
+                const data = await response.json();
+                const finalUrl = `${window.location.origin}/${data.quantum_code}`;
+
+                document.getElementById('shortenedUrl').textContent = finalUrl;
+                document.getElementById('resultBox').classList.add('active');
+
+            } catch (error) {
+                console.error(error);
+                alert("Server not responding. Make sure Flask backend is running!");
+            }
+        }
+
+        // Copy URL to clipboard
+        function copyUrl(event) {
+            const url = document.getElementById('shortenedUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
