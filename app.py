@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, redirect, render_template
 from flask_cors import CORS
 from quantum_logic import generate_quantum_code
 import sqlite3
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -24,7 +25,7 @@ init_db()
 @app.route('/')
 def home():
     # Render HTML page from templates folder
-    return render_template("index.html")  # <- fixed
+    return render_template("index.html")
 
 @app.route('/generate', methods=['POST'])
 def generate():
@@ -62,4 +63,6 @@ def redirect_url(short_code):
     return "Short link not found", 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use dynamic port for Render deployment
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
