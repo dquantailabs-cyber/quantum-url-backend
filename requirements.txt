@@ -1,4 +1,4 @@
 Flask==2.3.3
 Flask-Cors
-qiskit==0.41.1
-qiskit-aer==0.11.3
+qiskit==0.43.1
+qiskit-aer==0.13.3
